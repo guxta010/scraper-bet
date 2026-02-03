@@ -35,6 +35,11 @@ HOJE = datetime.now().strftime("%Y-%m-%d")
 
 # ================= SELENIUM =================
 
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+
 options = Options()
 
 # obrigatório para rodar em nuvem (Render)
@@ -42,10 +47,13 @@ options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 
-# mantém comportamento anti-deteção (igual ao seu)
+# evita problemas gráficos / crash
+options.add_argument("--disable-gpu")
+
+# mantém comportamento anti-detecção
 options.add_argument("--disable-blink-features=AutomationControlled")
 
-# substitui o start-maximized (que NÃO funciona em headless)
+# substitui o start-maximized (não funciona em headless)
 options.add_argument("--window-size=1920,1080")
 
 driver = webdriver.Chrome(
