@@ -7,6 +7,8 @@ from datetime import datetime
 from collections import Counter
 import time
 import json
+import os
+import requests
 
 # ================= CONFIG =================
 
@@ -222,3 +224,20 @@ with open("palpites.json", "w", encoding="utf-8") as f:
     json.dump(resultado_json, f, ensure_ascii=False, indent=2)
 
 print("JSON GERADO COM SUCESSO")
+
+# ================= ENVIO PARA API (RENDER) =================
+
+endpoint = os.getenv("RENDER_ENDPOINT")
+
+if endpoint:
+    try:
+        response = requests.post(
+            endpoint,
+            json=resultado_json,
+            timeout=20
+        )
+        print("ENVIADO PARA RENDER:", response.status_code)
+    except Exception as e:
+        print("ERRO AO ENVIAR PARA RENDER:", e)
+else:
+    print("RENDER_ENDPOINT não definido (rodando local)")
