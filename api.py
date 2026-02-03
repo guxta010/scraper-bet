@@ -6,45 +6,37 @@ import subprocess
 
 app = FastAPI()
 
-# =============================
-# Endpoint para consumir no app (Lovable)
-# =============================
-@app.get("/palpites")
-def get_palpites():
-    caminho = "palpites.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PALPITES_PATH = os.path.join(BASE_DIR, "palpites.json")
 
-    if not os.path.exists(caminho):
-        return JSONResponse(
-            status_code=404,
-            content={"erro": "palpites.json não encontrado"}
-        )
+@app.get("/")
+def home():
+    return {"status": "ok", "service": "forebet-scraper-api"}
 
-    with open(caminho, "r", encoding="utf-8") as f:
-        dados = json.load(f)
-
-    return JSONResponse(content=dados)
-
-
-# =============================
-# Endpoint para o CRON rodar o scraper
-# =============================
 @app.get("/run-scraper")
 def run_scraper():
     try:
         subprocess.run(
             ["python", "scraper.py"],
+            cwd=BASE_DIR,
             check=True
         )
-        return {
-            "status": "ok",
-            "message": "Scraper executado com sucesso"
-        }
-    except subprocess.CalledProcessError as e:
+        return {"status": "ok", "message": "Scraper executado com sucesso"}
+    except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={
-                "status": "erro",
-                "message": "Erro ao executar o scraper",
-                "detail": str(e)
-            }
+            content={"erro": str(e)}
         )
+
+@app.get("/palpites")
+def get_palpites():
+    if not os.path.exists(PALPITES_PATH):
+        return JSONResponse(
+            status_code=404,
+            content={"erro": "palpites.json não encontrado"}
+        )
+
+    with open(PALPITES_PATH, "r", encoding="utf-8") as f:
+        dados = json.load(f)
+
+    return JSONResponse(content=dados)
