@@ -26,5 +26,6 @@ jobs:
       - name: Rodar scraper
         env:
           RENDER_ENDPOINT: ${{ secrets.RENDER_ENDPOINT }}
+          SCRAPER_SECRET: ${{ secrets.SCRAPER_SECRET }}
         run: |
           python scraper.py
